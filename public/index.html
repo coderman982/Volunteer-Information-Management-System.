@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Volunteer Information Management System - Streamline your volunteer network, manage events, track hours, and gain insights.">
   <title>Volunteer Information Management System (VIMS)</title>
-  <!-- Google Fonts: Outfit -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,14 +13,11 @@
 </head>
 <body>
 
-  <!-- Ambient Glow Effects -->
   <div class="ambient-glow glow-1"></div>
   <div class="ambient-glow glow-2"></div>
 
-  <!-- Toast Notification -->
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- Navigation Bar -->
   <header id="app-header" class="main-header hidden">
     <div class="nav-container">
       <div class="logo">
@@ -48,10 +45,8 @@
     </div>
   </header>
 
-  <!-- Main Content Container -->
   <main id="app-container" class="app-main">
 
-    <!-- VIEW 1: AUTHENTICATION (Login / Register) -->
     <section id="view-auth" class="auth-section">
       <div class="auth-card glass">
         <div class="auth-header">
@@ -64,7 +59,6 @@
           <button id="auth-tab-register" class="auth-tab">Register</button>
         </div>
 
-        <!-- Login Form -->
         <form id="form-login" class="auth-form">
           <div class="form-group">
             <label for="login-email">Email Address</label>
@@ -84,7 +78,6 @@
           </div>
         </form>
 
-        <!-- Register Form -->
         <form id="form-register" class="auth-form hidden">
           <div class="form-group">
             <label for="register-name">Full Name</label>
@@ -112,7 +105,6 @@
       </div>
     </section>
 
-    <!-- VIEW 2: VOLUNTEER DASHBOARD -->
     <section id="view-volunteer-dashboard" class="dashboard-section hidden">
       <div class="welcome-banner">
         <h2>Welcome back, <span id="v-dash-name" class="highlight-text">Volunteer</span>!</h2>
@@ -120,7 +112,7 @@
       </div>
 
       <div class="dashboard-grid">
-        <!-- Profile summary card -->
+
         <div class="card glass profile-summary-card">
           <h3>My Overview</h3>
           <div class="profile-stats">
@@ -145,17 +137,16 @@
           </div>
         </div>
 
-        <!-- Registrations & Quick hours -->
         <div class="card glass flex-column justify-between">
           <div class="card-header-with-action">
             <h3>My Registered Events</h3>
             <button id="btn-dash-browse-events" class="btn btn-secondary btn-small">Browse More</button>
           </div>
           <div id="v-dash-events-list" class="event-mini-list scrollable">
-            <!-- Dynamically populated -->
+
             <p class="placeholder-text">You haven't registered for any upcoming events yet.</p>
           </div>
-          
+
           <div class="hours-quick-log-banner">
             <div>
               <strong>Completed an event?</strong>
@@ -166,7 +157,6 @@
         </div>
       </div>
 
-      <!-- Logs history -->
       <div class="card glass margin-top-2">
         <h3>My Hours Log History</h3>
         <div class="table-container">
@@ -181,7 +171,7 @@
               </tr>
             </thead>
             <tbody id="v-dash-hours-table-body">
-              <!-- Dynamically populated -->
+
               <tr>
                 <td colspan="5" class="center-text placeholder-text">No hours logged yet.</td>
               </tr>
@@ -191,14 +181,12 @@
       </div>
     </section>
 
-    <!-- VIEW 3: ADMIN DASHBOARD -->
     <section id="view-admin-dashboard" class="dashboard-section hidden">
       <div class="welcome-banner">
         <h2>Admin Command Center</h2>
         <p>Monitor operations, approve hours, and manage opportunities.</p>
       </div>
 
-      <!-- Stats counter grid -->
       <div class="stats-counter-grid">
         <div class="stat-card glass">
           <div class="stat-card-icon bg-blue">
@@ -246,10 +234,8 @@
         </div>
       </div>
 
-      <!-- Main Admin grid split: Approvals & Top contributors -->
       <div class="admin-grid margin-top-2">
-        
-        <!-- Hour Approvals -->
+
         <div class="card glass flex-column">
           <h3>Pending Hour Logs Verification</h3>
           <div class="table-container scrollable max-height-300">
@@ -265,7 +251,7 @@
                 </tr>
               </thead>
               <tbody id="admin-hours-table-body">
-                <!-- Dynamically populated -->
+
                 <tr>
                   <td colspan="6" class="center-text placeholder-text">All hours logs reviewed. No pending requests.</td>
                 </tr>
@@ -274,26 +260,23 @@
           </div>
         </div>
 
-        <!-- Custom HTML/CSS-based Analytics Chart Card -->
         <div class="card glass">
           <h3>Volunteer Leaderboard</h3>
           <div class="leaderboard-container" id="admin-leaderboard">
-            <!-- Dynamically populated -->
+
             <p class="placeholder-text">No logged approved hours yet.</p>
           </div>
         </div>
       </div>
-      
-      <!-- Event registrations analysis -->
+
       <div class="card glass margin-top-2">
         <h3>Opportunity Registrations Breakdown</h3>
         <div class="event-stats-chart-container" id="event-stats-bars">
-          <!-- Dynamically populated with CSS-based bar columns -->
+
         </div>
       </div>
     </section>
 
-    <!-- VIEW 4: EVENTS LIST VIEW (Admin + Volunteer) -->
     <section id="view-events" class="events-section hidden">
       <div class="view-header-row">
         <div>
@@ -318,11 +301,10 @@
       </div>
 
       <div id="events-grid" class="events-grid margin-top-2">
-        <!-- Dynamically populated card structure -->
+
       </div>
     </section>
 
-    <!-- VIEW 5: VOLUNTEERS DIRECTORY (Admin Only) -->
     <section id="view-volunteers" class="volunteers-section hidden">
       <h2>Volunteer Directory</h2>
       <p>Search and filter registered volunteers, evaluate their skills, and check their availability.</p>
@@ -351,19 +333,18 @@
               </tr>
             </thead>
             <tbody id="vol-directory-table-body">
-              <!-- Dynamically populated -->
+
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- VIEW 6: VOLUNTEER PROFILE SETUP (Volunteer Only) -->
     <section id="view-profile" class="profile-section hidden">
       <div class="profile-layout card glass max-width-600 margin-auto">
         <h2>My Volunteer Profile</h2>
         <p>Keep your profile details updated so admins can match you with the best-fitting opportunities.</p>
-        
+
         <form id="form-profile" class="profile-form margin-top-2">
           <div class="form-group">
             <label>Name</label>
@@ -396,7 +377,6 @@
 
   </main>
 
-  <!-- MODAL 1: CREATE/EDIT EVENT (Admin Only) -->
   <div id="modal-event" class="modal hidden">
     <div class="modal-overlay"></div>
     <div class="modal-content glass">
@@ -439,7 +419,6 @@
     </div>
   </div>
 
-  <!-- MODAL 2: LOG HOURS (Volunteer Only) -->
   <div id="modal-hours" class="modal hidden">
     <div class="modal-overlay"></div>
     <div class="modal-content glass">
@@ -451,7 +430,7 @@
         <div class="form-group">
           <label for="hours-event-select">Select Event</label>
           <select id="hours-event-select" required>
-            <!-- Populate with events -->
+
           </select>
         </div>
         <div class="form-row">

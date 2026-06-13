@@ -1,8 +1,5 @@
-// ==========================================================================
-// VIMS Single Page Application Logic (Vanilla JS)
-// ==========================================================================
 
-// Global state
+
 let state = {
   user: null,
   activeView: 'auth',
@@ -12,21 +9,18 @@ let state = {
   stats: null
 };
 
-// UI Elements
 const els = {
   header: document.getElementById('app-header'),
   navName: document.getElementById('nav-user-name'),
   btnLogout: document.getElementById('btn-logout'),
   toastContainer: document.getElementById('toast-container'),
-  
-  // Navigation buttons
+
   navDashboard: document.getElementById('nav-btn-dashboard'),
   navEvents: document.getElementById('nav-btn-events'),
   navHours: document.getElementById('nav-btn-hours'),
   navVolunteers: document.getElementById('nav-btn-volunteers'),
   navProfile: document.getElementById('nav-btn-profile'),
 
-  // Views
   viewAuth: document.getElementById('view-auth'),
   viewVolDashboard: document.getElementById('view-volunteer-dashboard'),
   viewAdminDashboard: document.getElementById('view-admin-dashboard'),
@@ -34,13 +28,11 @@ const els = {
   viewVolunteers: document.getElementById('view-volunteers'),
   viewProfile: document.getElementById('view-profile'),
 
-  // Auth Forms
   tabLogin: document.getElementById('auth-tab-login'),
   tabRegister: document.getElementById('auth-tab-register'),
   formLogin: document.getElementById('form-login'),
   formRegister: document.getElementById('form-register'),
-  
-  // Volunteer Dashboard fields
+
   vDashName: document.getElementById('v-dash-name'),
   vDashHours: document.getElementById('v-dash-hours'),
   vDashEmail: document.getElementById('v-dash-email'),
@@ -52,7 +44,6 @@ const els = {
   btnDashBrowse: document.getElementById('btn-dash-browse-events'),
   btnDashLogHours: document.getElementById('btn-dash-log-hours'),
 
-  // Admin Dashboard fields
   adminStatVolunteers: document.getElementById('admin-stat-volunteers'),
   adminStatHours: document.getElementById('admin-stat-hours'),
   adminStatEvents: document.getElementById('admin-stat-events'),
@@ -62,18 +53,15 @@ const els = {
   adminLeaderboard: document.getElementById('admin-leaderboard'),
   adminEventStatsBars: document.getElementById('event-stats-bars'),
 
-  // Events View
   eventsGrid: document.getElementById('events-grid'),
   eventSearch: document.getElementById('event-search'),
   eventStatusFilter: document.getElementById('event-status-filter'),
   btnCreateEventTrigger: document.getElementById('btn-event-create-trigger'),
 
-  // Volunteers Directory View
   volSearch: document.getElementById('vol-search'),
   volAvailabilityFilter: document.getElementById('vol-availability-filter'),
   volDirectoryTableBody: document.getElementById('vol-directory-table-body'),
 
-  // Profile View
   formProfile: document.getElementById('form-profile'),
   profileName: document.getElementById('profile-name-display'),
   profileEmail: document.getElementById('profile-email-display'),
@@ -81,7 +69,6 @@ const els = {
   profileInterests: document.getElementById('profile-interests'),
   profileAvailability: document.getElementById('profile-availability'),
 
-  // Modals
   modalEvent: document.getElementById('modal-event'),
   formEvent: document.getElementById('form-event'),
   modalEventTitle: document.getElementById('modal-event-title'),
@@ -104,13 +91,10 @@ const els = {
   btnModalHoursCancel: document.getElementById('btn-modal-hours-cancel')
 };
 
-// ==========================================
-// TOAST NOTIFICATIONS
-// ==========================================
 function showToast(message, type = 'info') {
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
-  
+
   let icon = '';
   if (type === 'success') {
     icon = `<svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
@@ -122,28 +106,23 @@ function showToast(message, type = 'info') {
 
   toast.innerHTML = `${icon}<span>${message}</span>`;
   els.toastContainer.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.style.opacity = '0';
     setTimeout(() => toast.remove(), 300);
   }, 4000);
 }
 
-// ==========================================
-// NAVIGATION / ROUTING SYSTEM
-// ==========================================
 function showView(viewId) {
-  // Hide all views
+
   const views = [els.viewAuth, els.viewVolDashboard, els.viewAdminDashboard, els.viewEvents, els.viewVolunteers, els.viewProfile];
   views.forEach(v => v.classList.add('hidden'));
 
-  // Remove active state from all nav buttons
   const navBtns = [els.navDashboard, els.navEvents, els.navHours, els.navVolunteers, els.navProfile];
   navBtns.forEach(b => b.classList.remove('active'));
 
   state.activeView = viewId;
 
-  // Show active view and highlight nav button
   if (viewId === 'auth') {
     els.viewAuth.classList.remove('hidden');
     els.header.classList.add('hidden');
@@ -169,11 +148,6 @@ function showView(viewId) {
   }
 }
 
-// ==========================================
-// DATA FETCHING & UI RENDERING
-// ==========================================
-
-// 1. Fetch current logged-in user session
 async function checkAuthSession() {
   try {
     const res = await fetch('/api/auth/me');
@@ -190,33 +164,29 @@ async function checkAuthSession() {
   }
 }
 
-// Configure dashboard layouts based on role
 function handleUserLoggedIn() {
   els.navName.textContent = state.user.name;
 
   if (state.user.role === 'admin') {
-    // Show admin navigation options
+
     document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
     document.querySelectorAll('.volunteer-only').forEach(el => el.classList.add('hidden'));
-    
-    // Redirect to Admin Dashboard
+
     showView('admin-dashboard');
     refreshAdminDashboard();
   } else {
-    // Show volunteer navigation options
+
     document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
     document.querySelectorAll('.volunteer-only').forEach(el => el.classList.remove('hidden'));
-    
-    // Redirect to Volunteer Dashboard
+
     showView('volunteer-dashboard');
     refreshVolunteerDashboard();
   }
 }
 
-// Refresh Volunteer Dashboard
 async function refreshVolunteerDashboard() {
   try {
-    // Update user display tags
+
     els.vDashName.textContent = state.user.name;
     els.vDashEmail.textContent = state.user.email;
     els.vDashAvailability.textContent = state.user.availability || 'Flexible';
@@ -224,24 +194,20 @@ async function refreshVolunteerDashboard() {
     renderProfileTags(state.user.skills, els.vDashSkills, 'No skills listed yet.');
     renderProfileTags(state.user.interests, els.vDashInterests, 'No interests listed yet.');
 
-    // Fetch Events list and filter registered ones
     const eventsRes = await fetch('/api/events');
     const hoursRes = await fetch('/api/hours');
 
     if (eventsRes.ok && hoursRes.ok) {
       const eventsData = await eventsRes.json();
       const hoursData = await hoursRes.json();
-      
+
       state.events = eventsData.events;
       state.hoursLogs = hoursData.logs;
 
-      // Render hours list
       renderVolunteerHoursLogs(state.hoursLogs);
 
-      // Render registered events mini-list
       renderRegisteredEvents(state.events);
-      
-      // Calculate approved hours sum
+
       const approvedSum = state.hoursLogs
         .filter(l => l.status === 'approved')
         .reduce((sum, current) => sum + current.hours, 0);
@@ -252,7 +218,6 @@ async function refreshVolunteerDashboard() {
   }
 }
 
-// Render comma separated profile tags
 function renderProfileTags(tagStr, targetContainer, placeholder) {
   targetContainer.innerHTML = '';
   if (!tagStr || tagStr.trim() === '') {
@@ -267,11 +232,10 @@ function renderProfileTags(tagStr, targetContainer, placeholder) {
   });
 }
 
-// Render registered events list in volunteer dashboard
 function renderRegisteredEvents(events) {
   els.vDashEventsList.innerHTML = '';
   const registered = events.filter(e => e.is_registered === 1 && e.status === 'upcoming');
-  
+
   if (registered.length === 0) {
     els.vDashEventsList.innerHTML = `<p class="placeholder-text">You haven't registered for any upcoming events yet.</p>`;
     return;
@@ -290,7 +254,6 @@ function renderRegisteredEvents(events) {
     els.vDashEventsList.appendChild(item);
   });
 
-  // Attach click listener for unregister buttons
   els.vDashEventsList.querySelectorAll('.btn-cancel-reg').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       const eventId = e.target.getAttribute('data-id');
@@ -299,7 +262,6 @@ function renderRegisteredEvents(events) {
   });
 }
 
-// Render Volunteer Hours Logs Table
 function renderVolunteerHoursLogs(logs) {
   els.vDashHoursTableBody.innerHTML = '';
   if (logs.length === 0) {
@@ -324,7 +286,6 @@ function renderVolunteerHoursLogs(logs) {
   });
 }
 
-// Refresh Admin Dashboard
 async function refreshAdminDashboard() {
   try {
     const statsRes = await fetch('/api/stats');
@@ -337,13 +298,11 @@ async function refreshAdminDashboard() {
       state.stats = statsData.stats;
       state.hoursLogs = hoursData.logs;
 
-      // Render Stats Indicators
       els.adminStatVolunteers.textContent = state.stats.totalVolunteers;
       els.adminStatHours.textContent = state.stats.totalApprovedHours.toFixed(1);
       els.adminStatEvents.textContent = state.stats.totalEvents;
       els.adminStatPending.textContent = state.stats.pendingApprovalCount;
 
-      // Highlight the pending log card if count > 0
       const pendingCard = document.getElementById('admin-stat-pending-trigger');
       if (state.stats.pendingApprovalCount > 0) {
         pendingCard.style.animation = 'pulse 2s infinite';
@@ -351,13 +310,10 @@ async function refreshAdminDashboard() {
         pendingCard.style.animation = 'none';
       }
 
-      // Render hours approvals requests table
       renderAdminHoursLogsTable(state.hoursLogs);
 
-      // Render Leaderboard Chart
       renderLeaderboard(state.stats.topVolunteers, state.stats.totalApprovedHours);
 
-      // Render Column Bar Charts
       renderEventsBarChart(state.stats.eventStats);
     }
   } catch (err) {
@@ -365,7 +321,6 @@ async function refreshAdminDashboard() {
   }
 }
 
-// Render Admin Hours Logs Table (Hours Pending Approvals)
 function renderAdminHoursLogsTable(logs) {
   els.adminHoursTableBody.innerHTML = '';
   const pendingLogs = logs.filter(l => l.status === 'pending');
@@ -393,7 +348,6 @@ function renderAdminHoursLogsTable(logs) {
     els.adminHoursTableBody.appendChild(row);
   });
 
-  // Attach approval listeners
   els.adminHoursTableBody.querySelectorAll('.btn-approve').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       const logId = e.target.getAttribute('data-id');
@@ -409,7 +363,6 @@ function renderAdminHoursLogsTable(logs) {
   });
 }
 
-// Render CSS/HTML Leaderboard
 function renderLeaderboard(topVolunteers, totalHoursSum) {
   els.adminLeaderboard.innerHTML = '';
   if (!topVolunteers || topVolunteers.length === 0) {
@@ -433,15 +386,13 @@ function renderLeaderboard(topVolunteers, totalHoursSum) {
       </div>
     `;
     els.adminLeaderboard.appendChild(item);
-    
-    // Animate the bar expansion
+
     setTimeout(() => {
       item.querySelector('.leaderboard-progress-fill').style.width = `${pct}%`;
     }, 100);
   });
 }
 
-// Render CSS-based Column Event Bar Charts
 function renderEventsBarChart(eventStats) {
   els.adminEventStatsBars.innerHTML = '';
   if (!eventStats || eventStats.length === 0) {
@@ -462,14 +413,12 @@ function renderEventsBarChart(eventStats) {
     `;
     els.adminEventStatsBars.appendChild(column);
 
-    // Animate the bar height
     setTimeout(() => {
       column.querySelector('.chart-bar-pill').style.height = `${pct}%`;
     }, 100);
   });
 }
 
-// 2. Events List Page
 async function loadEventsPage() {
   try {
     const res = await fetch('/api/events');
@@ -485,7 +434,7 @@ async function loadEventsPage() {
 
 function renderEventsGrid() {
   els.eventsGrid.innerHTML = '';
-  
+
   const query = els.eventSearch.value.toLowerCase();
   const filterStatus = els.eventStatusFilter.value;
 
@@ -503,7 +452,7 @@ function renderEventsGrid() {
   filtered.forEach(e => {
     const card = document.createElement('div');
     card.className = 'card glass event-card';
-    
+
     let badgeClass = e.status === 'upcoming' ? 'bg-teal' : 'badge-approved';
     let actionButtons = '';
 
@@ -553,7 +502,6 @@ function renderEventsGrid() {
     els.eventsGrid.appendChild(card);
   });
 
-  // Attach event action listeners
   els.eventsGrid.querySelectorAll('.btn-register-toggle').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       const eventId = e.target.getAttribute('data-id');
@@ -585,7 +533,6 @@ function renderEventsGrid() {
   });
 }
 
-// 3. Volunteers Directory Page (Admin)
 async function loadVolunteersPage() {
   try {
     const res = await fetch('/api/volunteers');
@@ -601,7 +548,7 @@ async function loadVolunteersPage() {
 
 function renderVolunteersDirectory() {
   els.volDirectoryTableBody.innerHTML = '';
-  
+
   const query = els.volSearch.value.toLowerCase();
   const availabilityFilter = els.volAvailabilityFilter.value;
 
@@ -610,7 +557,7 @@ function renderVolunteersDirectory() {
                        v.email.toLowerCase().includes(query) || 
                        (v.skills && v.skills.toLowerCase().includes(query)) ||
                        (v.interests && v.interests.toLowerCase().includes(query));
-    
+
     const matchAvailability = availabilityFilter === 'all' || v.availability === availabilityFilter;
     return matchQuery && matchAvailability;
   });
@@ -634,7 +581,6 @@ function renderVolunteersDirectory() {
   });
 }
 
-// 4. Load Profile Settings Page (Volunteer)
 function loadProfilePage() {
   els.profileName.value = state.user.name;
   els.profileEmail.value = state.user.email;
@@ -643,11 +589,6 @@ function loadProfilePage() {
   els.profileAvailability.value = state.user.availability || 'Flexible';
 }
 
-// ==========================================
-// FORM SUBMISSIONS & ACTIONS
-// ==========================================
-
-// Authentication Action: Submit login
 els.formLogin.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('login-email').value;
@@ -674,7 +615,6 @@ els.formLogin.addEventListener('submit', async (e) => {
   }
 });
 
-// Authentication Action: Submit Register
 els.formRegister.addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('register-name').value;
@@ -708,7 +648,6 @@ els.formRegister.addEventListener('submit', async (e) => {
   }
 });
 
-// Logout
 els.btnLogout.addEventListener('click', async () => {
   try {
     const res = await fetch('/api/auth/logout', { method: 'POST' });
@@ -722,7 +661,6 @@ els.btnLogout.addEventListener('click', async () => {
   }
 });
 
-// Volunteer registration actions
 async function registerForEvent(eventId) {
   try {
     const res = await fetch(`/api/events/${eventId}/register`, { method: 'POST' });
@@ -753,7 +691,6 @@ async function cancelEventRegistration(eventId) {
   }
 }
 
-// Profile Save Updates
 els.formProfile.addEventListener('submit', async (e) => {
   e.preventDefault();
   const skills = els.profileSkills.value;
@@ -780,7 +717,6 @@ els.formProfile.addEventListener('submit', async (e) => {
   }
 });
 
-// Admin Hours Approval action
 async function updateHoursLogStatus(logId, status) {
   try {
     const res = await fetch(`/api/hours/${logId}/approve`, {
@@ -801,11 +737,6 @@ async function updateHoursLogStatus(logId, status) {
   }
 }
 
-// ==========================================
-// MODAL MANAGEMENT & FORMS
-// ==========================================
-
-// Event Modal Open (Create / Edit)
 function openEventModal(event = null) {
   els.modalEvent.classList.remove('hidden');
   if (event) {
@@ -880,23 +811,20 @@ async function deleteEvent(id) {
   }
 }
 
-// Hours Log Modal Open (Volunteer)
 async function openHoursModal() {
   els.modalHours.classList.remove('hidden');
   els.formHours.reset();
   els.hoursDate.value = new Date().toISOString().split('T')[0];
 
-  // Fetch events list to populate drop down
   try {
     const res = await fetch('/api/events');
     if (res.ok) {
       const data = await res.json();
       state.events = data.events;
 
-      // Populate events dropdown (Only completed events or events registered to)
       els.hoursEventSelect.innerHTML = '<option value="">-- Choose Event --</option>';
       state.events.forEach(e => {
-        // Allow logging hours for completed events, or upcoming events they were registered to
+
         if (e.status === 'completed' || e.is_registered === 1) {
           const opt = document.createElement('option');
           opt.value = e.id;
@@ -952,9 +880,6 @@ els.formHours.addEventListener('submit', async (e) => {
   }
 });
 
-// ==========================================
-// TABS & FILTERS LISTENERS
-// ==========================================
 els.tabLogin.addEventListener('click', () => {
   els.tabLogin.classList.add('active');
   els.tabRegister.classList.remove('active');
@@ -969,7 +894,6 @@ els.tabRegister.addEventListener('click', () => {
   els.formLogin.classList.add('hidden');
 });
 
-// Nav item routing triggers
 els.navDashboard.addEventListener('click', () => {
   if (state.user.role === 'admin') {
     showView('admin-dashboard');
@@ -1000,22 +924,17 @@ els.btnDashBrowse.addEventListener('click', () => {
   loadEventsPage();
 });
 
-// Filter triggers
 els.eventSearch.addEventListener('input', renderEventsGrid);
 els.eventStatusFilter.addEventListener('change', renderEventsGrid);
 els.volSearch.addEventListener('input', renderVolunteersDirectory);
 els.volAvailabilityFilter.addEventListener('change', renderVolunteersDirectory);
 
-// Admin Quick Approval Counter jump
 els.adminStatPendingTrigger.addEventListener('click', () => {
-  // Smooth scroll down to table
+
   const table = els.adminHoursTableBody.closest('.card');
   table.scrollIntoView({ behavior: 'smooth' });
 });
 
-// ==========================================
-// BOOTSTRAP APPLICATION
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthSession();
 });

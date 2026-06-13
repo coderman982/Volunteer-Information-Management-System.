@@ -13,10 +13,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Helper: Seed initial mock data
 const seedDatabase = async () => {
   try {
-    // Check if we already have users
+
     const userCount = await dbGet('SELECT COUNT(*) as count FROM users');
     if (userCount.count > 0) {
       console.log('Database already has data. Skipping seeding.');
@@ -25,7 +24,6 @@ const seedDatabase = async () => {
 
     console.log('Seeding initial mock data...');
 
-    // 1. Create Users (Admin & Volunteers)
     const adminPassword = await bcrypt.hash('adminpassword', 10);
     const volunteerPassword = await bcrypt.hash('password123', 10);
 
@@ -49,12 +47,11 @@ const seedDatabase = async () => {
       ['Alex Johnson', 'alex@vims.org', volunteerPassword, 'volunteer', 'Web Development, Design', 'Technology, Community Outreach', 'Flexible']
     )).id;
 
-    // 2. Create Events
     const now = new Date();
-    const futureDate1 = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 5 days later
-    const futureDate2 = new Date(now.getTime() + 12 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 12 days later
-    const pastDate1 = new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 4 days ago
-    const pastDate2 = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 10 days ago
+    const futureDate1 = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; 
+    const futureDate2 = new Date(now.getTime() + 12 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; 
+    const pastDate1 = new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; 
+    const pastDate2 = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; 
 
     const e1Id = (await dbRun(
       'INSERT INTO events (title, description, date, location, status) VALUES (?, ?, ?, ?, ?)',
@@ -76,7 +73,6 @@ const seedDatabase = async () => {
       ['Tech Training for Seniors', 'Teach elderly community members how to use tablets, smartphones, and video calls.', pastDate2, 'Community Library Hub', 'completed']
     )).id;
 
-    // 3. Create Event Registrations
     await dbRun('INSERT INTO event_registrations (event_id, user_id, registered_at) VALUES (?, ?, ?)', [e1Id, v1Id, new Date().toISOString()]);
     await dbRun('INSERT INTO event_registrations (event_id, user_id, registered_at) VALUES (?, ?, ?)', [e1Id, v2Id, new Date().toISOString()]);
     await dbRun('INSERT INTO event_registrations (event_id, user_id, registered_at) VALUES (?, ?, ?)', [e2Id, v3Id, new Date().toISOString()]);
@@ -84,7 +80,6 @@ const seedDatabase = async () => {
     await dbRun('INSERT INTO event_registrations (event_id, user_id, registered_at) VALUES (?, ?, ?)', [e3Id, v2Id, new Date().toISOString()]);
     await dbRun('INSERT INTO event_registrations (event_id, user_id, registered_at) VALUES (?, ?, ?)', [e4Id, v3Id, new Date().toISOString()]);
 
-    // 4. Create Hours Logs (Approved & Pending)
     await dbRun(
       'INSERT INTO hours_log (user_id, event_id, hours, date, description, status) VALUES (?, ?, ?, ?, ?, ?)',
       [v1Id, e3Id, 4.5, pastDate1, 'Hosted a board game tournament with senior residents.', 'approved']
@@ -108,15 +103,9 @@ const seedDatabase = async () => {
   }
 };
 
-// ==========================================
-// API ROUTES
-// ==========================================
-
-// --- Authentication ---
-
 app.post('/api/auth/register', async (req, res) => {
   const { name, email, password, role } = req.body;
-  
+
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Please provide name, email, and password.' });
   }
@@ -128,14 +117,13 @@ app.post('/api/auth/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const assignedRole = role === 'admin' ? 'admin' : 'volunteer'; // default to volunteer
+    const assignedRole = role === 'admin' ? 'admin' : 'volunteer'; 
 
     const result = await dbRun(
       'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
       [name, email, hashedPassword, assignedRole]
     );
 
-    // Create JWT token
     const token = jwt.sign(
       { id: result.id, name, email, role: assignedRole },
       JWT_SECRET,
@@ -145,7 +133,7 @@ app.post('/api/auth/register', async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 24 * 60 * 60 * 1000 
     });
 
     res.status(201).json({
@@ -224,11 +212,9 @@ app.get('/api/auth/me', authenticate, async (req, res) => {
   }
 });
 
-// --- Volunteers (Profile & Lists) ---
-
 app.get('/api/volunteers', authenticate, isAdmin, async (req, res) => {
   try {
-    // Fetch all volunteers along with their total approved volunteer hours
+
     const volunteers = await dbAll(`
       SELECT 
         u.id, u.name, u.email, u.skills, u.interests, u.availability,
@@ -263,14 +249,11 @@ app.put('/api/volunteers/profile', authenticate, async (req, res) => {
   }
 });
 
-// --- Events ---
-
-// Get all events. If volunteer, check registration status.
 app.get('/api/events', authenticate, async (req, res) => {
   try {
     let events;
     if (req.user.role === 'admin') {
-      // Admins see everything, with counts of registered volunteers
+
       events = await dbAll(`
         SELECT e.*, COUNT(er.id) as registered_count
         FROM events e
@@ -279,7 +262,7 @@ app.get('/api/events', authenticate, async (req, res) => {
         ORDER BY e.date ASC
       `);
     } else {
-      // Volunteers see events, plus a flag indicating if they are registered
+
       events = await dbAll(`
         SELECT e.*, 
                CASE WHEN er.id IS NOT NULL THEN 1 ELSE 0 END as is_registered,
@@ -351,7 +334,7 @@ app.delete('/api/events/:id', authenticate, isAdmin, async (req, res) => {
     if (result.changes === 0) {
       return res.status(404).json({ error: 'Event not found.' });
     }
-    // Clean up registrations & hours logs for this event
+
     await dbRun('DELETE FROM event_registrations WHERE event_id = ?', [eventId]);
     await dbRun('DELETE FROM hours_log WHERE event_id = ?', [eventId]);
 
@@ -362,7 +345,6 @@ app.delete('/api/events/:id', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Register for an event
 app.post('/api/events/:id/register', authenticate, async (req, res) => {
   const eventId = req.params.id;
   const userId = req.user.id;
@@ -393,7 +375,6 @@ app.post('/api/events/:id/register', authenticate, async (req, res) => {
   }
 });
 
-// Cancel registration
 app.delete('/api/events/:id/register', authenticate, async (req, res) => {
   const eventId = req.params.id;
   const userId = req.user.id;
@@ -415,9 +396,6 @@ app.delete('/api/events/:id/register', authenticate, async (req, res) => {
   }
 });
 
-// --- Volunteer Hours Logging ---
-
-// Log hours (Volunteer)
 app.post('/api/hours/log', authenticate, async (req, res) => {
   const { eventId, hours, date, description } = req.body;
 
@@ -431,7 +409,7 @@ app.post('/api/hours/log', authenticate, async (req, res) => {
   }
 
   try {
-    // Verify event exists
+
     const event = await dbGet('SELECT id FROM events WHERE id = ?', [eventId]);
     if (!event) {
       return res.status(404).json({ error: 'Selected event does not exist.' });
@@ -449,12 +427,11 @@ app.post('/api/hours/log', authenticate, async (req, res) => {
   }
 });
 
-// Fetch hours log list
 app.get('/api/hours', authenticate, async (req, res) => {
   try {
     let logs;
     if (req.user.role === 'admin') {
-      // Admin sees all logs with volunteer name and event title
+
       logs = await dbAll(`
         SELECT hl.*, u.name as volunteer_name, e.title as event_title
         FROM hours_log hl
@@ -463,7 +440,7 @@ app.get('/api/hours', authenticate, async (req, res) => {
         ORDER BY hl.date DESC
       `);
     } else {
-      // Volunteer sees only their own logs with event title
+
       logs = await dbAll(`
         SELECT hl.*, e.title as event_title
         FROM hours_log hl
@@ -479,10 +456,9 @@ app.get('/api/hours', authenticate, async (req, res) => {
   }
 });
 
-// Approve or Reject logged hours (Admin only)
 app.put('/api/hours/:id/approve', authenticate, isAdmin, async (req, res) => {
   const logId = req.params.id;
-  const { status } = req.body; // 'approved' or 'rejected'
+  const { status } = req.body; 
 
   if (!['approved', 'rejected'].includes(status)) {
     return res.status(400).json({ error: "Status must be 'approved' or 'rejected'." });
@@ -505,23 +481,17 @@ app.put('/api/hours/:id/approve', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// --- Admin Dashboard Stats ---
-
 app.get('/api/stats', authenticate, isAdmin, async (req, res) => {
   try {
-    // Total Volunteers
+
     const volCount = await dbGet("SELECT COUNT(*) as count FROM users WHERE role = 'volunteer'");
-    
-    // Total events
+
     const eventCount = await dbGet("SELECT COUNT(*) as count FROM events");
 
-    // Approved Volunteer Hours
     const hoursSum = await dbGet("SELECT SUM(hours) as sum FROM hours_log WHERE status = 'approved'");
 
-    // Pending hours log request count
     const pendingCount = await dbGet("SELECT COUNT(*) as count FROM hours_log WHERE status = 'pending'");
 
-    // Top volunteers by approved hours
     const topVolunteers = await dbAll(`
       SELECT u.name, SUM(hl.hours) as hours
       FROM hours_log hl
@@ -532,7 +502,6 @@ app.get('/api/stats', authenticate, isAdmin, async (req, res) => {
       LIMIT 5
     `);
 
-    // Registrations per event (upcoming / completed)
     const eventStats = await dbAll(`
       SELECT e.title, e.status, COUNT(er.id) as registrations
       FROM events e
@@ -558,15 +527,10 @@ app.get('/api/stats', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-
-// Catch-all route to serve the SPA frontend
 app.get('*all', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ==========================================
-// START SERVER
-// ==========================================
 const startServer = async () => {
   await initDatabase();
   await seedDatabase();

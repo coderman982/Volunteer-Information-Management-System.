@@ -1,26 +1,22 @@
-/* ==========================================================================
-   VIMS Premium Design Style System (Vanilla CSS)
-   ========================================================================== */
 
-/* 1. Design System Tokens */
+
 :root {
   --font-main: 'Outfit', sans-serif;
 
-  /* Color Palette - Vibrant Slate/Indigo/Teal */
   --bg-base: #0b0f19;
   --bg-surface: rgba(17, 24, 39, 0.7);
   --bg-surface-hover: rgba(31, 41, 55, 0.85);
   --border-color: rgba(255, 255, 255, 0.08);
   --border-focus: rgba(20, 184, 166, 0.5);
-  
-  --primary: #14b8a6; /* Neon Teal */
+
+  --primary: #14b8a6; 
   --primary-hover: #0d9488;
   --primary-glow: rgba(20, 184, 166, 0.3);
-  
-  --secondary: #6366f1; /* Indigo */
+
+  --secondary: #6366f1; 
   --secondary-hover: #4f46e5;
   --secondary-glow: rgba(99, 102, 241, 0.3);
-  
+
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
@@ -28,7 +24,6 @@
   --text-main: #f3f4f6;
   --text-bright: #ffffff;
 
-  /* Spacers & Radius */
   --radius-s: 8px;
   --radius-m: 12px;
   --radius-l: 20px;
@@ -37,7 +32,6 @@
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 2. Global Reset & Ambient Background */
 * {
   margin: 0;
   padding: 0;
@@ -55,7 +49,6 @@ body {
   flex-direction: column;
 }
 
-/* Background glows */
 .ambient-glow {
   position: absolute;
   border-radius: 50%;
@@ -81,7 +74,6 @@ body {
   right: -5%;
 }
 
-/* Scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -100,7 +92,6 @@ body {
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* 3. Navigation Header */
 .main-header {
   background: rgba(11, 15, 25, 0.6);
   backdrop-filter: blur(15px);
@@ -183,7 +174,6 @@ body {
   border-radius: var(--radius-pill);
 }
 
-/* 4. Glassmorphism Card System */
 .glass {
   background: var(--bg-surface);
   backdrop-filter: blur(12px);
@@ -224,7 +214,6 @@ body {
   border-radius: var(--radius-pill);
 }
 
-/* 5. Typography & Grid Helpers */
 h1 {
   font-size: 2.25rem;
   font-weight: 800;
@@ -263,7 +252,6 @@ p {
   font-size: 0.9rem;
 }
 
-/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -329,7 +317,6 @@ p {
   width: 100%;
 }
 
-/* Badges */
 .badge {
   display: inline-block;
   padding: 0.25rem 0.65rem;
@@ -363,7 +350,6 @@ p {
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-/* Layout Utilities */
 .margin-top-1 { margin-top: 1rem; }
 .margin-top-2 { margin-top: 2rem; }
 .margin-auto { margin-left: auto; margin-right: auto; }
@@ -375,7 +361,6 @@ p {
 .max-height-300 { max-height: 300px; }
 .hidden { display: none !important; }
 
-/* 6. Form Fields */
 .form-group {
   margin-bottom: 1.25rem;
 }
@@ -438,7 +423,6 @@ textarea {
   border-style: dashed !important;
 }
 
-/* 7. Auth Portal Component */
 .auth-section {
   display: flex;
   justify-content: center;
@@ -507,7 +491,6 @@ textarea {
   border-radius: 4px;
 }
 
-/* 8. Main App Shell */
 .app-main {
   max-width: 1280px;
   width: 100%;
@@ -516,7 +499,6 @@ textarea {
   flex-grow: 1;
 }
 
-/* Welcome banner */
 .welcome-banner {
   margin-bottom: 2.5rem;
 }
@@ -527,7 +509,6 @@ textarea {
   margin-bottom: 0.5rem;
 }
 
-/* 9. Volunteer Dashboard Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -680,7 +661,6 @@ textarea {
   font-size: 0.8rem;
 }
 
-/* 10. Tables */
 .table-container {
   width: 100%;
   overflow-x: auto;
@@ -721,7 +701,6 @@ textarea {
   background: rgba(255, 255, 255, 0.015);
 }
 
-/* 11. Admin Command Center */
 .stats-counter-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -787,7 +766,6 @@ textarea {
   gap: 2rem;
 }
 
-/* Custom Chart: Leaderboard */
 .leaderboard-container {
   display: flex;
   flex-direction: column;
@@ -830,7 +808,6 @@ textarea {
   transition: width 1s ease-out;
 }
 
-/* Custom Chart: Event Registrations breakdown bar columns */
 .event-stats-chart-container {
   display: flex;
   align-items: flex-end;
@@ -881,7 +858,6 @@ textarea {
   white-space: nowrap;
 }
 
-/* 12. Filters row & Opportunities grid */
 .filters-row {
   display: flex;
   gap: 1rem;
@@ -969,7 +945,6 @@ textarea {
   flex: 1;
 }
 
-/* 13. Modal Dialogs */
 .modal {
   position: fixed;
   top: 0;
@@ -1042,7 +1017,6 @@ textarea {
   gap: 1rem;
 }
 
-/* 14. Toast Notifications */
 .toast-container {
   position: fixed;
   bottom: 2rem;

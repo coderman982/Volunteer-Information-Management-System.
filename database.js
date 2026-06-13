@@ -10,7 +10,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
-// Helper functions to wrap SQLite operations in Promises
 const dbRun = (sql, params = []) => {
   return new Promise((resolve, reject) => {
     db.run(sql, params, function (err) {
@@ -38,10 +37,9 @@ const dbAll = (sql, params = []) => {
   });
 };
 
-// Initialize schema
 const initDatabase = async () => {
   try {
-    // 1. Users table
+
     await dbRun(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +53,6 @@ const initDatabase = async () => {
       )
     `);
 
-    // 2. Events table
     await dbRun(`
       CREATE TABLE IF NOT EXISTS events (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -67,7 +64,6 @@ const initDatabase = async () => {
       )
     `);
 
-    // 3. Event registrations table
     await dbRun(`
       CREATE TABLE IF NOT EXISTS event_registrations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -80,7 +76,6 @@ const initDatabase = async () => {
       )
     `);
 
-    // 4. Hours log table
     await dbRun(`
       CREATE TABLE IF NOT EXISTS hours_log (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
