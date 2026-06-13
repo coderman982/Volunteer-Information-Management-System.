@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Volunteer Information Management System - Streamline your volunteer network, manage events, track hours, and gain insights.">
+  <title>Volunteer Information Management System (VIMS)</title>
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Ambient Glow Effects -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Toast Notification -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Navigation Bar -->
+  <header id="app-header" class="main-header hidden">
+    <div class="nav-container">
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="logo-icon">
+          <path d="M11.645 20.91l-.007-.003-.003-.001a11.4 11.4 0 01-.507-.314 24.378 24.378 0 01-5.17-4.475C3.966 13.9 3 11.776 3 9.5 3 5.358 6.358 2 10.5 2c2.154 0 4.103.905 5.5 2.358A7.487 7.487 0 0121.5 9.5c0 2.276-.966 4.4-2.958 6.62a24.378 24.378 0 01-5.17 4.475 11.4 11.4 0 01-.507.313l-.003.002-.007.003h-.002a.75.75 0 01-.716 0zM12 11.75a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" />
+        </svg>
+        <span>VIMS</span>
+      </div>
+      <nav class="nav-links">
+        <button id="nav-btn-dashboard" class="nav-link-btn active">Dashboard</button>
+        <button id="nav-btn-events" class="nav-link-btn">Events</button>
+        <button id="nav-btn-hours" class="nav-link-btn">Log Hours</button>
+        <button id="nav-btn-volunteers" class="nav-link-btn admin-only hidden">Volunteers</button>
+        <button id="nav-btn-profile" class="nav-link-btn volunteer-only">My Profile</button>
+      </nav>
+      <div class="user-menu">
+        <span id="nav-user-name" class="user-name-display">Loading...</span>
+        <button id="btn-logout" class="btn btn-secondary btn-small">
+          Logout
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="btn-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main id="app-container" class="app-main">
+
+    <!-- VIEW 1: AUTHENTICATION (Login / Register) -->
+    <section id="view-auth" class="auth-section">
+      <div class="auth-card glass">
+        <div class="auth-header">
+          <h1>Volunteer Portal</h1>
+          <p>Join our community, organize events, and track your impact.</p>
+        </div>
+
+        <div class="auth-tabs">
+          <button id="auth-tab-login" class="auth-tab active">Log In</button>
+          <button id="auth-tab-register" class="auth-tab">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="form-login" class="auth-form">
+          <div class="form-group">
+            <label for="login-email">Email Address</label>
+            <input type="email" id="login-email" required placeholder="name@vims.org">
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" required placeholder="••••••••">
+          </div>
+          <button type="submit" id="btn-login-submit" class="btn btn-primary btn-block">
+            Sign In
+          </button>
+          <div class="auth-helper">
+            <p>Demo Accounts:</p>
+            <span>Admin: <code>admin@vims.org</code> / <code>adminpassword</code></span><br>
+            <span>Volunteer: <code>john@vims.org</code> / <code>password123</code></span>
+          </div>
+        </form>
+
+        <!-- Register Form -->
+        <form id="form-register" class="auth-form hidden">
+          <div class="form-group">
+            <label for="register-name">Full Name</label>
+            <input type="text" id="register-name" required placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label for="register-email">Email Address</label>
+            <input type="email" id="register-email" required placeholder="name@vims.org">
+          </div>
+          <div class="form-group">
+            <label for="register-password">Password</label>
+            <input type="password" id="register-password" required placeholder="Min 6 characters">
+          </div>
+          <div class="form-group">
+            <label for="register-role">Account Type</label>
+            <select id="register-role">
+              <option value="volunteer">Volunteer</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+          <button type="submit" id="btn-register-submit" class="btn btn-primary btn-block">
+            Create Account
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 2: VOLUNTEER DASHBOARD -->
+    <section id="view-volunteer-dashboard" class="dashboard-section hidden">
+      <div class="welcome-banner">
+        <h2>Welcome back, <span id="v-dash-name" class="highlight-text">Volunteer</span>!</h2>
+        <p>Your passion drives positive change. Let's make an impact today.</p>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Profile summary card -->
+        <div class="card glass profile-summary-card">
+          <h3>My Overview</h3>
+          <div class="profile-stats">
+            <div class="stat-circle">
+              <span id="v-dash-hours" class="stat-num">0</span>
+              <span class="stat-lbl">Hours Approved</span>
+            </div>
+            <div class="profile-details-mini">
+              <div><strong>Email:</strong> <span id="v-dash-email">-</span></div>
+              <div><strong>Availability:</strong> <span id="v-dash-availability" class="badge bg-teal">-</span></div>
+            </div>
+          </div>
+          <div class="profile-tags-section">
+            <h4>My Skills</h4>
+            <div id="v-dash-skills" class="tags-container">
+              <span class="placeholder-text">No skills added yet. Update in profile.</span>
+            </div>
+            <h4>My Interests</h4>
+            <div id="v-dash-interests" class="tags-container">
+              <span class="placeholder-text">No interests added yet. Update in profile.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Registrations & Quick hours -->
+        <div class="card glass flex-column justify-between">
+          <div class="card-header-with-action">
+            <h3>My Registered Events</h3>
+            <button id="btn-dash-browse-events" class="btn btn-secondary btn-small">Browse More</button>
+          </div>
+          <div id="v-dash-events-list" class="event-mini-list scrollable">
+            <!-- Dynamically populated -->
+            <p class="placeholder-text">You haven't registered for any upcoming events yet.</p>
+          </div>
+          
+          <div class="hours-quick-log-banner">
+            <div>
+              <strong>Completed an event?</strong>
+              <p>Log your hours to get them certified by an admin.</p>
+            </div>
+            <button id="btn-dash-log-hours" class="btn btn-primary btn-small">Log Hours Now</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logs history -->
+      <div class="card glass margin-top-2">
+        <h3>My Hours Log History</h3>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Event</th>
+                <th>Hours</th>
+                <th>Description</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="v-dash-hours-table-body">
+              <!-- Dynamically populated -->
+              <tr>
+                <td colspan="5" class="center-text placeholder-text">No hours logged yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: ADMIN DASHBOARD -->
+    <section id="view-admin-dashboard" class="dashboard-section hidden">
+      <div class="welcome-banner">
+        <h2>Admin Command Center</h2>
+        <p>Monitor operations, approve hours, and manage opportunities.</p>
+      </div>
+
+      <!-- Stats counter grid -->
+      <div class="stats-counter-grid">
+        <div class="stat-card glass">
+          <div class="stat-card-icon bg-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="svg-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0110.089 20c-3.197 0-6.136-1.317-8.259-3.447M15 9.453a5.008 5.008 0 013 4.498m-3-4.498a5.008 5.008 0 00-3-4.498m3 4.498A4.998 4.998 0 0118 14M15 9.453a4.998 4.998 0 00-3-4.498m-7.12 11.233a11.34 11.34 0 01-2.28-2.280m0 0a9.016 9.016 0 013.203-3.203m0 0h-.008.008zm1.485-2.776a9.014 9.014 0 016.485-3.407m0 0a4.998 4.998 0 013.046 3.5m-9.531-.093a4.997 4.997 0 013.11-3.68M10.294 15h.008" />
+            </svg>
+          </div>
+          <div>
+            <span class="stat-value" id="admin-stat-volunteers">0</span>
+            <span class="stat-label">Total Volunteers</span>
+          </div>
+        </div>
+        <div class="stat-card glass">
+          <div class="stat-card-icon bg-teal">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="svg-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <span class="stat-value" id="admin-stat-hours">0</span>
+            <span class="stat-label">Approved Hours</span>
+          </div>
+        </div>
+        <div class="stat-card glass">
+          <div class="stat-card-icon bg-purple">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="svg-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+          </div>
+          <div>
+            <span class="stat-value" id="admin-stat-events">0</span>
+            <span class="stat-label">Total Events</span>
+          </div>
+        </div>
+        <div class="stat-card glass highlight-card" id="admin-stat-pending-trigger">
+          <div class="stat-card-icon bg-yellow">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="svg-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+          </div>
+          <div>
+            <span class="stat-value" id="admin-stat-pending">0</span>
+            <span class="stat-label">Pending Hours Approval</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Admin grid split: Approvals & Top contributors -->
+      <div class="admin-grid margin-top-2">
+        
+        <!-- Hour Approvals -->
+        <div class="card glass flex-column">
+          <h3>Pending Hour Logs Verification</h3>
+          <div class="table-container scrollable max-height-300">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Volunteer</th>
+                  <th>Event</th>
+                  <th>Hours</th>
+                  <th>Date</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-hours-table-body">
+                <!-- Dynamically populated -->
+                <tr>
+                  <td colspan="6" class="center-text placeholder-text">All hours logs reviewed. No pending requests.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Custom HTML/CSS-based Analytics Chart Card -->
+        <div class="card glass">
+          <h3>Volunteer Leaderboard</h3>
+          <div class="leaderboard-container" id="admin-leaderboard">
+            <!-- Dynamically populated -->
+            <p class="placeholder-text">No logged approved hours yet.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Event registrations analysis -->
+      <div class="card glass margin-top-2">
+        <h3>Opportunity Registrations Breakdown</h3>
+        <div class="event-stats-chart-container" id="event-stats-bars">
+          <!-- Dynamically populated with CSS-based bar columns -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: EVENTS LIST VIEW (Admin + Volunteer) -->
+    <section id="view-events" class="events-section hidden">
+      <div class="view-header-row">
+        <div>
+          <h2>Volunteer Opportunities & Events</h2>
+          <p>Sign up to participate in upcoming events or view historic accomplishments.</p>
+        </div>
+        <button id="btn-event-create-trigger" class="btn btn-primary admin-only hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="btn-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Create Event
+        </button>
+      </div>
+
+      <div class="filters-row margin-top-1">
+        <input type="text" id="event-search" class="filter-input" placeholder="Search events...">
+        <select id="event-status-filter" class="filter-select">
+          <option value="all">All Events</option>
+          <option value="upcoming">Upcoming Opportunities</option>
+          <option value="completed">Completed Projects</option>
+        </select>
+      </div>
+
+      <div id="events-grid" class="events-grid margin-top-2">
+        <!-- Dynamically populated card structure -->
+      </div>
+    </section>
+
+    <!-- VIEW 5: VOLUNTEERS DIRECTORY (Admin Only) -->
+    <section id="view-volunteers" class="volunteers-section hidden">
+      <h2>Volunteer Directory</h2>
+      <p>Search and filter registered volunteers, evaluate their skills, and check their availability.</p>
+
+      <div class="filters-row margin-top-1">
+        <input type="text" id="vol-search" class="filter-input" placeholder="Search by name, email, skills...">
+        <select id="vol-availability-filter" class="filter-select">
+          <option value="all">All Availabilities</option>
+          <option value="Weekends">Weekends</option>
+          <option value="Weekdays">Weekdays</option>
+          <option value="Flexible">Flexible</option>
+        </select>
+      </div>
+
+      <div class="card glass margin-top-2">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Skills</th>
+                <th>Interests</th>
+                <th>Availability</th>
+                <th>Total Approved Hours</th>
+              </tr>
+            </thead>
+            <tbody id="vol-directory-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 6: VOLUNTEER PROFILE SETUP (Volunteer Only) -->
+    <section id="view-profile" class="profile-section hidden">
+      <div class="profile-layout card glass max-width-600 margin-auto">
+        <h2>My Volunteer Profile</h2>
+        <p>Keep your profile details updated so admins can match you with the best-fitting opportunities.</p>
+        
+        <form id="form-profile" class="profile-form margin-top-2">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="profile-name-display" disabled class="input-disabled">
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="text" id="profile-email-display" disabled class="input-disabled">
+          </div>
+          <div class="form-group">
+            <label for="profile-skills">Skills (comma-separated)</label>
+            <input type="text" id="profile-skills" placeholder="e.g. Teaching, Gardening, Graphic Design">
+          </div>
+          <div class="form-group">
+            <label for="profile-interests">Interests (comma-separated)</label>
+            <input type="text" id="profile-interests" placeholder="e.g. Environment, Senior Support, Education">
+          </div>
+          <div class="form-group">
+            <label for="profile-availability">Availability</label>
+            <select id="profile-availability">
+              <option value="Flexible">Flexible</option>
+              <option value="Weekends">Weekends</option>
+              <option value="Weekdays">Weekdays</option>
+            </select>
+          </div>
+          <button type="submit" id="btn-profile-save" class="btn btn-primary btn-block">Save Updates</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL 1: CREATE/EDIT EVENT (Admin Only) -->
+  <div id="modal-event" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content glass">
+      <div class="modal-header">
+        <h3 id="modal-event-title">Create New Event</h3>
+        <button id="btn-modal-event-close" class="btn-close">&times;</button>
+      </div>
+      <form id="form-event">
+        <input type="hidden" id="event-modal-id">
+        <div class="form-group">
+          <label for="event-title">Event Title</label>
+          <input type="text" id="event-title" required placeholder="e.g. Autumn Forest Restoration">
+        </div>
+        <div class="form-group">
+          <label for="event-description">Description</label>
+          <textarea id="event-description" placeholder="Provide event details, objectives, and any requirements..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="event-date">Date</label>
+            <input type="date" id="event-date" required>
+          </div>
+          <div class="form-group">
+            <label for="event-location">Location</label>
+            <input type="text" id="event-location" required placeholder="e.g. Central Botanical Park">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="event-status">Status</label>
+          <select id="event-status">
+            <option value="upcoming">Upcoming</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-modal-event-cancel" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btn-modal-event-submit" class="btn btn-primary">Save Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: LOG HOURS (Volunteer Only) -->
+  <div id="modal-hours" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content glass">
+      <div class="modal-header">
+        <h3>Log Volunteer Hours</h3>
+        <button id="btn-modal-hours-close" class="btn-close">&times;</button>
+      </div>
+      <form id="form-hours">
+        <div class="form-group">
+          <label for="hours-event-select">Select Event</label>
+          <select id="hours-event-select" required>
+            <!-- Populate with events -->
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="hours-number">Hours Completed</label>
+            <input type="number" id="hours-number" step="0.5" min="0.5" max="24" required placeholder="e.g. 3.5">
+          </div>
+          <div class="form-group">
+            <label for="hours-date">Date Performed</label>
+            <input type="date" id="hours-date" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="hours-description">Brief Description of Activities</label>
+          <textarea id="hours-description" placeholder="Explain what tasks you completed..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-modal-hours-cancel" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btn-modal-hours-submit" class="btn btn-primary">Submit Log</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
